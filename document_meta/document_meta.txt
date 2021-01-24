@@ -1,0 +1,57 @@
+
+CONVENTIE PRACTICA:
+STUDENT FORM:
+	- Nume
+	- cetatenie
+	- oras
+	- strada
+	- nr_cladire
+	- apartament
+	- judet
+	- telefon
+	- email
+	- cnp
+	- serie_ci
+	- nr_ci
+	- data_nasterii
+	- locul_nasterii
+	- an_studiu
+	- grupa
+	- specializare
+	- linie_studiu
+	
+MENTOR FORM:
+	- societate
+	- oras_sediu
+	- strada_sediu
+	- nr_sediu
+	- telefon
+	- fax
+	- email
+	- cod_fiscal
+	- cont
+	- banca_cont
+	- nume_mentor (si mentor si tutore)
+	- profesie_mentor
+	- telefon_mentor
+	- email_mentor
+	- reprezentant_legal
+	- adresa_stagiu_practica
+	
+
+PROFESSOR_FORM:
+	- nume
+	- functie
+	- telefon
+	- fax
+	- email
+	- nr_credite
+	
+ACORD PRACTICA
+MENTOR_FORM:
+	- vezi sus
+	
+	
+
+
+	
