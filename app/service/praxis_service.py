@@ -46,7 +46,7 @@ def get_by_email():
         resp.status_code = 404
         return resp
 
-@app.route('/student-form/create', methods=['POST'])
+@app.route('/praxis/create', methods=['POST'])
 def create():
     praxis_json = request.get_json()
 
