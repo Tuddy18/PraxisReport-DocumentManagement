@@ -29,9 +29,6 @@ class StudentForm(db.Model, JsonSerializable):
     specializare = Column(String(120), nullable=True)
     linie_studiu = Column(String(120), nullable=True)
 
-    def __init__(self, email, name):
-        self.email = email
-        self.name = name
 
     def __repr__(self):
         return '<StudentForm %r - %r>' % (self.email, self.name)

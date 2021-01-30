@@ -33,3 +33,18 @@ def get_sf_by_email():
         resp.status_code = 404
         return resp
 
+@app.route('/student-form/create', methods=['POST'])
+def create():
+    sf_json = request.get_json()
+
+    form = StudentForm()
+    form.update_from_dict(sf_json)
+
+    db.session().add(form)
+    db.session().commit()
+
+    profile = db.session().query(StudentForm).filter_by(id=form.id).first()
+
+    resp = jsonify(profile.json_dict())
+    return resp
+

@@ -25,7 +25,7 @@ MENTOR FORM:
 	- oras_sediu
 	- strada_sediu
 	- nr_sediu
-	- telefon
+	- telefon_sediu
 	- fax
 	- email
 	- cod_fiscal
