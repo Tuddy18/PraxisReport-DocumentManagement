@@ -21,9 +21,9 @@ def get_all_sf():
 
 @app.route('/student-form/get-by-student-email', methods=['POST'])
 def get_sf_by_email():
-    email = request.form['email']
+    email = request.get_json()['email']
 
-    form = db.session().query(StudentForm).filter(email == email).first()
+    form = db.session().query(StudentForm).filter(StudentForm.email == email).first()
 
     if form:
         resp = jsonify(form.json_dict())

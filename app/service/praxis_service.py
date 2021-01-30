@@ -18,7 +18,7 @@ def get_all():
 
 @app.route('/praxis/get-by-student-email', methods=['POST'])
 def get_by_semail():
-    email = request.form['email']
+    email = request.get_json()['email']
 
     praxis = db.session().query(Praxis).join(StudentForm).filter(StudentForm.email == email).first()
 
