@@ -11,7 +11,7 @@ class Praxis(db.Model, JsonSerializable):
 
     start_date = Column(Date())
     end_date = Column(Date())
-    nr_credite = Column(Integer())
+    nr_credite = Column(Integer(), default=6)
     status = Column(String(120), default='in_progress')
 
     student_form_id = Column(Integer, ForeignKey('StudentForm.id'), nullable=True)

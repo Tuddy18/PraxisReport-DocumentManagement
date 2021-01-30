@@ -32,7 +32,7 @@ def get_by_semail():
 
 @app.route('/praxis/get-by-email', methods=['POST'])
 def get_by_email():
-    email = request.form['email']
+    email = request.get_json()['email']
 
     praxis = db.session().query(Praxis).join(StudentForm).filter(StudentForm.email == email).first()
     # spraxis = db.session().query(Praxis).join(StudentForm).filter(StudentForm.email == email).first()
@@ -46,3 +46,18 @@ def get_by_email():
         resp.status_code = 404
         return resp
 
+@app.route('/student-form/create', methods=['POST'])
+def create():
+    praxis_json = request.get_json()
+
+    praxis = Praxis
+    sform = StudentForm(email = praxis_json['student_email'])
+    praxis.student_form = sform
+
+    db.session().add(praxis)
+    db.session().commit()
+
+    praxis = db.session().query(Praxis).filter_by(id=praxis.id).first()
+
+    resp = jsonify(praxis.json_dict())
+    return resp
