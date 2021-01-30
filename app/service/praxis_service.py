@@ -47,10 +47,10 @@ def get_by_email():
         return resp
 
 @app.route('/praxis/create', methods=['POST'])
-def create():
+def create_praxis():
     praxis_json = request.get_json()
 
-    praxis = Praxis
+    praxis = Praxis()
     sform = StudentForm(email = praxis_json['student_email'])
     praxis.student_form = sform
 
