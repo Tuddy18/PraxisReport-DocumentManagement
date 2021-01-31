@@ -12,7 +12,11 @@ class JsonSerializable:
 
     def update_from_dict(self, json_dict):
         for key in json_dict.keys():
-            if key[0] != 'id':
-                self.__setattr__(key, json_dict[key])
+            if json_dict[key]:
+                if isinstance(self.__dict__[key], JsonSerializable):
+                    self.__dict__[key].update_from_dict(json_dict[key])
+                else:
+                    if key != 'id':
+                        self.__setattr__(key, json_dict[key])
 
     # def json_str(self):

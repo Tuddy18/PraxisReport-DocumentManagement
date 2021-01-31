@@ -3,9 +3,7 @@ from flask import request, render_template, flash, redirect, url_for, session, j
 from passlib.hash import sha256_crypt
 from sqlalchemy.orm import with_polymorphic
 
-from app.domain.praxis import *
-from app.domain.student_form import *
-
+from app.domain import *
 
 @app.route('/praxis/get-all', methods=['GET'])
 def get_all():
@@ -51,13 +49,31 @@ def create_praxis():
     praxis_json = request.get_json()
 
     praxis = Praxis()
-    sform = StudentForm(email = praxis_json['student_email'])
+    sform = StudentForm(email=praxis_json['student_email'])
+    pform = ProfessorForm()
+    mform = MentorForm()
+
     praxis.student_form = sform
+    praxis.professor_form = pform
+    praxis.mentor_form = mform
 
     db.session().add(praxis)
     db.session().commit()
 
     praxis = db.session().query(Praxis).filter_by(id=praxis.id).first()
+
+    resp = jsonify(praxis.json_dict())
+    return resp
+
+@app.route('/praxis/update', methods=['PUT'])
+def update_praxis():
+    praxis_json = request.get_json()
+    praxis = Praxis.query.filter_by(id=praxis_json['id']).first()
+
+    praxis.update_from_dict(praxis_json)
+    db.session().commit()
+
+    praxis = Praxis.query.filter_by(id=praxis_json['id']).first()
 
     resp = jsonify(praxis.json_dict())
     return resp

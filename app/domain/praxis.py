@@ -17,6 +17,12 @@ class Praxis(db.Model, JsonSerializable):
     student_form_id = Column(Integer, ForeignKey('StudentForm.id'), nullable=True)
     student_form = relationship("StudentForm", back_populates="praxis", lazy='joined')
 
+    mentor_form_id = Column(Integer, ForeignKey('MentorForm.id'), nullable=True)
+    mentor_form = relationship("MentorForm", back_populates="praxis", lazy='joined')
+
+    professor_form_id = Column(Integer, ForeignKey('ProfessorForm.id'), nullable=True)
+    professor_form = relationship("ProfessorForm", back_populates="praxis", lazy='joined')
+
     @validates('status')
     def validate_status(self, key, status):
         possible_statues = ['in_progress', 'documented', 'completed', 'incorrect']
