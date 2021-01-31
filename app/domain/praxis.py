@@ -13,6 +13,7 @@ class Praxis(db.Model, JsonSerializable):
     end_date = Column(Date())
     nr_credite = Column(Integer(), default=6)
     status = Column(String(120), default='in_progress')
+    status_message = Column(String(120))
 
     student_form_id = Column(Integer, ForeignKey('StudentForm.id'), nullable=True)
     student_form = relationship("StudentForm", back_populates="praxis", lazy='joined', cascade="all, delete")
