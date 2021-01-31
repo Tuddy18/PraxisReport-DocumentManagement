@@ -32,12 +32,12 @@ def get_by_semail():
 def get_by_email():
     email = request.get_json()['email']
 
-    praxis = db.session().query(Praxis).join(StudentForm).filter(StudentForm.email == email).first()
+    praxises = db.session().query(Praxis).join(StudentForm).filter(StudentForm.email == email).all()
     # spraxis = db.session().query(Praxis).join(StudentForm).filter(StudentForm.email == email).first()
     # spraxis = db.session().query(Praxis).join(StudentForm).filter(StudentForm.email == email).first()
 
     if praxis:
-        resp = jsonify(praxis.json_dict())
+        resp = jsonify([praxis.json_dict() for praxis in praxises])
         return resp
     else:
         resp = jsonify(success=False, message='profile not found')
