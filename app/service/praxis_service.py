@@ -77,3 +77,15 @@ def update_praxis():
 
     resp = jsonify(praxis.json_dict())
     return resp
+
+@app.route('/praxis/delete', methods=['DELETE'])
+def delete_praxis():
+    id = request.get_json['id']
+
+    praxis = Praxis.query.filter_by(id=id).first()
+
+    db.session().delete(praxis)
+    db.session().commit()
+
+    resp = jsonify(praxis.json_dict())
+    return resp
