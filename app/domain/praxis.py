@@ -15,13 +15,13 @@ class Praxis(db.Model, JsonSerializable):
     status = Column(String(120), default='in_progress')
 
     student_form_id = Column(Integer, ForeignKey('StudentForm.id'), nullable=True)
-    student_form = relationship("StudentForm", back_populates="praxis", lazy='joined')
+    student_form = relationship("StudentForm", back_populates="praxis", lazy='joined', cascade="all, delete")
 
     mentor_form_id = Column(Integer, ForeignKey('MentorForm.id'), nullable=True)
-    mentor_form = relationship("MentorForm", back_populates="praxis", lazy='joined')
+    mentor_form = relationship("MentorForm", back_populates="praxis", lazy='joined', cascade="all, delete")
 
     professor_form_id = Column(Integer, ForeignKey('ProfessorForm.id'), nullable=True)
-    professor_form = relationship("ProfessorForm", back_populates="praxis", lazy='joined')
+    professor_form = relationship("ProfessorForm", back_populates="praxis", lazy='joined', cascade="all, delete")
 
     @validates('status')
     def validate_status(self, key, status):
