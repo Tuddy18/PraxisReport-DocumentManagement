@@ -26,6 +26,7 @@ class StudentForm(db.Model, JsonSerializable):
     locul_nasterii = Column(String(120), nullable=True)
     an_studiu = Column(String(120), nullable=True)
     grupa = Column(String(120), nullable=True)
+    facultate = Column(String(120), nullable=True)
     specializare = Column(String(120), nullable=True)
     linie_studiu = Column(String(120), nullable=True)
 

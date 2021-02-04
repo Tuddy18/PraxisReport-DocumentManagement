@@ -1,4 +1,6 @@
-from app import app
+from flask_mail import Message
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from app import app, mailapp
 from flask import request, render_template, flash, redirect, url_for, session, jsonify
 from passlib.hash import sha256_crypt
 from sqlalchemy.orm import with_polymorphic
@@ -6,6 +8,7 @@ from sqlalchemy.orm import with_polymorphic
 from app.domain import *
 
 @app.route('/praxis/get-all', methods=['GET'])
+@jwt_required
 def get_all():
     praxises = Praxis.query.all()
 
@@ -15,6 +18,7 @@ def get_all():
 
 
 @app.route('/praxis/get-by-student-email', methods=['POST'])
+@jwt_required
 def get_by_semail():
     email = request.get_json()['email']
 
@@ -28,34 +32,76 @@ def get_by_semail():
         resp.status_code = 404
         return resp
 
-@app.route('/praxis/get-by-email', methods=['POST'])
-def get_by_email():
-    email = request.get_json()['email']
 
-    praxises = db.session().query(Praxis).join(StudentForm).filter(StudentForm.email == email).all()
-    # spraxis = db.session().query(Praxis).join(StudentForm).filter(StudentForm.email == email).first()
-    # spraxis = db.session().query(Praxis).join(StudentForm).filter(StudentForm.email == email).first()
+@app.route('/praxis/get-by-email', methods=['GET'])
+@jwt_required
+def get_by_email_with_token():
+    email = get_jwt_identity()
 
-    if praxis:
-        resp = jsonify([praxis.json_dict() for praxis in praxises])
-        return resp
+    spraxises = db.session().query(Praxis).join(StudentForm).filter(StudentForm.email == email).all()
+    mpraxis = db.session().query(Praxis).join(MentorForm).filter(MentorForm.email == email).first()
+    ppraxis = db.session().query(Praxis).join(ProfessorForm).filter(ProfessorForm.email == email).first()
+
+    # dont do this
+
+    praxises = []
+    if spraxises:
+        praxises = spraxises
+    elif mpraxis:
+        praxises = mpraxis
+    elif ppraxis:
+        praxises = ppraxis
     else:
         resp = jsonify(success=False, message='profile not found')
         resp.status_code = 404
         return resp
+    resp = jsonify([praxis.json_dict() for praxis in praxises])
+    return resp
+
+@app.route('/praxis/get-by-email', methods=['POST'])
+@jwt_required
+def get_by_email():
+    email = request.get_json()['email']
+
+    spraxises = db.session().query(Praxis).join(StudentForm).filter(StudentForm.email == email).all()
+    mpraxis = db.session().query(Praxis).join(MentorForm).filter(MentorForm.email == email).first()
+    ppraxis = db.session().query(Praxis).join(ProfessorForm).filter(ProfessorForm.email == email).first()
+
+    # dont do this
+
+    praxises = []
+    if spraxises:
+        praxises = spraxises
+    elif mpraxis:
+        praxises = mpraxis
+    elif ppraxis:
+        praxises = ppraxis
+    else:
+        resp = jsonify(success=False, message='profile not found')
+        resp.status_code = 404
+        return resp
+    resp = jsonify([praxis.json_dict() for praxis in praxises])
+    return resp
 
 @app.route('/praxis/create', methods=['POST'])
+@jwt_required
 def create_praxis():
     praxis_json = request.get_json()
+    if not praxis_json:
+        student_email = get_jwt_identity()
+    else:
+        student_email = praxis_json['student_email']
 
     praxis = Praxis()
-    sform = StudentForm(email=praxis_json['student_email'])
+    sform = StudentForm(email=student_email)
     pform = ProfessorForm()
     mform = MentorForm()
+    rform = ReportForm()
 
     praxis.student_form = sform
     praxis.professor_form = pform
     praxis.mentor_form = mform
+    praxis.report_form = rform
 
     db.session().add(praxis)
     db.session().commit()
@@ -66,6 +112,7 @@ def create_praxis():
     return resp
 
 @app.route('/praxis/update', methods=['PUT'])
+@jwt_required
 def update_praxis():
     praxis_json = request.get_json()
     praxis = Praxis.query.filter_by(id=praxis_json['id']).first()
@@ -78,7 +125,36 @@ def update_praxis():
     resp = jsonify(praxis.json_dict())
     return resp
 
+@app.route('/praxis/update-prof-mentor', methods=['PUT'])
+@jwt_required
+def update_praxis_mentors():
+    praxis_json = request.get_json()
+    praxis = Praxis.query.filter_by(id=praxis_json['id']).first()
+
+    prof_email = praxis_json['professor_email']
+    mentor_email = praxis_json['mentor_email']
+
+    praxis.professor_form.email = prof_email
+    praxis.mentor_form.email = mentor_email
+
+    db.session().commit()
+
+    should_send_mail = praxis_json['should_send_email']
+    if should_send_mail:
+        try:
+            msg = Message('Hello', sender=app.config['MAIL_USERNAME'], recipients=[prof_email])
+            msg.body = "You have been chosen. Heed the call!"
+            mailapp.send(msg)
+        except:
+            pass
+
+    praxis = Praxis.query.filter_by(id=praxis_json['id']).first()
+
+    resp = jsonify(praxis.json_dict())
+    return resp
+
 @app.route('/praxis/delete', methods=['DELETE'])
+@jwt_required
 def delete_praxis():
     id = request.get_json['id']
 
