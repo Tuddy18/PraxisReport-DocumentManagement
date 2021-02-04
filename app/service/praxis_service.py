@@ -64,7 +64,7 @@ def get_form_by_email():
     email = get_jwt_identity()
     praxis_id = request.get_json()['praxis_id']
 
-    praxis = db.session().query(Praxis).filter(id=praxis_id)
+    praxis = db.session().query(Praxis).filter(id=praxis_id).first()
     form = {}
 
     if praxis.student_form.email == email:
