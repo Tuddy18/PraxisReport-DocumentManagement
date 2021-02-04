@@ -58,6 +58,28 @@ def get_by_email_with_token():
     resp = jsonify([praxis.json_dict() for praxis in praxises])
     return resp
 
+@app.route('/praxis/get-form-by-email', methods=['POST'])
+@jwt_required
+def get_form_by_email():
+    email = get_jwt_identity()
+    praxis_id = request.get_json()['praxis_id']
+
+    praxis = db.session().query(Praxis).filter(id=praxis_id)
+    form = {}
+
+    if praxis.student_form.email == email:
+        form = praxis.student_form
+    elif praxis.mentor_form.email == email:
+        form = praxis.mentor_form
+    elif praxis.professor_form == email:
+        form = praxis.professor_form
+    else:
+        resp = jsonify(success=False, message='praxis not found')
+        resp.status_code = 404
+        return resp
+    resp = jsonify(form.json_dict())
+    return resp
+
 @app.route('/praxis/get-by-email', methods=['POST'])
 @jwt_required
 def get_by_email():
