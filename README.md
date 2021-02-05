@@ -14,6 +14,7 @@ Iftinca Dan: https://github.com/daniftinca
 
 <h3> API documentations </h3>
 https://praxisreport-documentmanagement.azurewebsites.net/doc
+<br> <br>
 https://praxisreport-profilemanagement.azurewebsites.net/doc
 
 <h2> Activity Flow </h2>
