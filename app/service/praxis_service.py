@@ -70,7 +70,7 @@ def get_by_email_with_token():
         resp = jsonify(success=False, message='profile not found')
         resp.status_code = 404
         return resp
-    resp = jsonify([praxis.json_dict() for praxis in praxises])
+    resp = jsonify([praxis.json_dict() for praxis in praxises[::-1]])
     return resp
 
 @app.route('/praxis/get-form-by-email', methods=['POST'])
@@ -133,7 +133,7 @@ def get_by_email():
         resp = jsonify(success=False, message='profile not found')
         resp.status_code = 404
         return resp
-    resp = jsonify([praxis.json_dict() for praxis in praxises])
+    resp = jsonify([praxis.json_dict() for praxis in praxises[::-1]])
     return resp
 
 @app.route('/praxis/create', methods=['POST'])
@@ -285,7 +285,6 @@ def delete_praxis():
 
     resp = jsonify(praxis.json_dict())
     return resp
-
 
 @app.route('/praxis/request-report-notification', methods=['POST'])
 @auto.doc(args=['user identity (JWT_token)', 'praxis_id'])
