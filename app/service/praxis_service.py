@@ -198,7 +198,7 @@ def update_praxis():
     return resp
 
 @app.route('/praxis/update-prof-mentor', methods=['PUT'])
-@auto.doc(args=['user identity (JWT_token)', 'professor email', 'mentor email', 'should_send_email'])
+@auto.doc(args=['user identity (JWT_token)', 'id', 'professor email', 'mentor email', 'should_send_email'])
 @jwt_required
 def update_praxis_mentors():
     '''
