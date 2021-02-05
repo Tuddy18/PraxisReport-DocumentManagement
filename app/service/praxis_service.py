@@ -176,8 +176,8 @@ def update_praxis_mentors():
     should_send_mail = praxis_json['should_send_email']
     if should_send_mail:
         try:
-            msg = Message('UBB PraxisReport info', sender=app.config['MAIL_USERNAME'], recipients=[prof_email])
-            msg.body = "Hello!\n You have been requested to fill out your info for a praxis. \n Please login and fill out the data:\n"
+            msg = Message('UBB PraxisReport info', sender=app.config['MAIL_USERNAME'], recipients=[prof_email, mentor_email])
+            msg.body = f"Hello!\n You have been requested to fill out your info for a praxis for student {praxis.student_form.email}. \n Please login and fill out the data:\n"
             msg.body += 'https://ubb-documente-practica.herokuapp.com'
             mailapp.send(msg)
         except:
@@ -215,3 +215,33 @@ def delete_praxis():
 
     resp = jsonify(praxis.json_dict())
     return resp
+
+
+@app.route('/praxis/request-report-notification', methods=['POST'])
+@jwt_required
+def request_report_notification():
+    email = get_jwt_identity()
+    praxis_id = request.get_json()['praxis_id']
+
+    praxis = db.session().query(Praxis).filter_by(id=praxis_id).first()
+
+    if praxis:
+        if praxis.status == 'completed':
+            mentor_email = praxis.mentor_form.email
+            try:
+                msg = Message('UBB PraxisReport request', sender=app.config['MAIL_USERNAME'], recipients=[mentor_email])
+                msg.body = f"Hello!\n You have been requested to fill out a praxis report for student {praxis.student_form.email}. \n Please login and fill out the data:\n"
+                msg.body += 'https://ubb-documente-practica.herokuapp.com'
+                mailapp.send(msg)
+            except:
+                pass
+            resp = jsonify(success=True, message='Success!')
+            return resp
+        else:
+            resp = jsonify(success=False, message='praxis not completed')
+            resp.status_code = 404
+            return resp
+    else:
+        resp = jsonify(success=False, message='praxis not found')
+        resp.status_code = 404
+        return resp
