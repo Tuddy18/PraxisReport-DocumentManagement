@@ -69,10 +69,13 @@ def get_form_by_email():
 
     if praxis.student_form.email == email:
         form = praxis.student_form
+        form['type'] = 'student_form'
     elif praxis.mentor_form.email == email:
         form = praxis.mentor_form
+        form['type'] = 'mentor_form'
     elif praxis.professor_form == email:
         form = praxis.professor_form
+        form['type'] = 'professor_form'
     else:
         resp = jsonify(success=False, message='praxis not found')
         resp.status_code = 404
