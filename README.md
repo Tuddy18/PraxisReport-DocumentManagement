@@ -13,4 +13,10 @@ Iftinca Dan: https://github.com/daniftinca
 </p>
 
 <h2> Activity Flow </h2>
-![activity_flow](document_meta/document_flow.png)
+<img src="document_meta/document_flow.png">
+
+<h2> System Architecture </h2>
+<img src="document_meta/system_architecture.png">
+
+<h2> Entity Relationship Model </h2>
+<img src="document_meta/praxis_db.png">
