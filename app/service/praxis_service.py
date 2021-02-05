@@ -1,21 +1,31 @@
 from flask_mail import Message
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app import app, mailapp
+from app import app, mailapp, auto
 from flask import request, render_template, flash, redirect, url_for, session, jsonify
 from passlib.hash import sha256_crypt
 from sqlalchemy.orm import with_polymorphic
 
 from app.domain import *
 
+@app.route('/doc')
+@auto.doc()
+def documentation():
+    '''
+    return API documentation page
+    '''
+    return auto.html()
+
 @app.route('/praxis/get-all', methods=['GET'])
+@auto.doc(args=['user identity (JWT_token)'])
 @jwt_required
 def get_all():
+    '''
+    Returns all praxis objects
+    '''
     praxises = Praxis.query.all()
-
 
     resp = jsonify([praxis.json_dict() for praxis in praxises])
     return resp
-
 
 @app.route('/praxis/get-by-student-email', methods=['POST'])
 @jwt_required
@@ -34,8 +44,12 @@ def get_by_semail():
 
 
 @app.route('/praxis/get-by-email', methods=['GET'])
+@auto.doc(args=['user identity (JWT_token)'])
 @jwt_required
 def get_by_email_with_token():
+    '''
+    Returns all praxis objects based on the user JWT token identity
+    '''
     email = get_jwt_identity()
 
     spraxises = db.session().query(Praxis).join(StudentForm).filter(StudentForm.email == email).all()
@@ -59,8 +73,12 @@ def get_by_email_with_token():
     return resp
 
 @app.route('/praxis/get-form-by-email', methods=['POST'])
+@auto.doc(args=['user identity (JWT_token)', 'praxis_id'])
 @jwt_required
 def get_form_by_email():
+    '''
+    Returns the user specific form from a praxis, based on the user token identity
+    '''
     email = get_jwt_identity()
     praxis_id = request.get_json()['praxis_id']
 
@@ -118,6 +136,7 @@ def get_by_email():
     return resp
 
 @app.route('/praxis/create', methods=['POST'])
+@auto.doc(args=['user identity (JWT_token)', 'praxis object (json)'])
 @jwt_required
 def create_praxis():
     praxis_json = request.get_json()
@@ -146,6 +165,7 @@ def create_praxis():
     return resp
 
 @app.route('/praxis/update', methods=['PUT'])
+@auto.doc(args=['user identity (JWT_token)', 'praxis object (json)'])
 @jwt_required
 def update_praxis():
     praxis_json = request.get_json()
@@ -160,8 +180,12 @@ def update_praxis():
     return resp
 
 @app.route('/praxis/update-prof-mentor', methods=['PUT'])
+@auto.doc(args=['user identity (JWT_token)', 'professor email', 'mentor email'])
 @jwt_required
 def update_praxis_mentors():
+    '''
+    Updates the professor and mentor of a praxis object and notifies them via email
+    '''
     praxis_json = request.get_json()
     praxis = Praxis.query.filter_by(id=praxis_json['id']).first()
 
@@ -189,8 +213,12 @@ def update_praxis_mentors():
     return resp
 
 @app.route('/praxis/update-status', methods=['PUT'])
+@auto.doc(args=['user identity (JWT_token)', 'id', 'status_message', 'accepted'])
 @jwt_required
 def update_praxis_status():
+    '''
+    Updates the status of a praxis and adds a message
+    '''
     praxis_json = request.get_json()
     praxis = Praxis.query.filter_by(id=praxis_json['id']).first()
 
@@ -204,6 +232,7 @@ def update_praxis_status():
     return resp
 
 @app.route('/praxis/delete', methods=['DELETE'])
+@auto.doc(args=['user identity (JWT_token)', 'id'])
 @jwt_required
 def delete_praxis():
     id = request.get_json['id']
@@ -218,8 +247,12 @@ def delete_praxis():
 
 
 @app.route('/praxis/request-report-notification', methods=['POST'])
+@auto.doc(args=['user identity (JWT_token)', 'praxis_id'])
 @jwt_required
 def request_report_notification():
+    '''
+    Sends an email notification to the praxis mentor (if the praxis status is completed) to fill out report data
+    '''
     email = get_jwt_identity()
     praxis_id = request.get_json()['praxis_id']
 
@@ -245,3 +278,4 @@ def request_report_notification():
         resp = jsonify(success=False, message='praxis not found')
         resp.status_code = 404
         return resp
+

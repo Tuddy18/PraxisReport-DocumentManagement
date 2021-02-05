@@ -4,9 +4,11 @@ from db_config import config
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_mail import Mail
+from flask_selfdoc import Autodoc
 
 
 app = Flask(__name__)
+auto = Autodoc(app)
 
 app.config['MAIL_SERVER']='smtp.mailgun.org'
 app.config['MAIL_PORT'] = 587
