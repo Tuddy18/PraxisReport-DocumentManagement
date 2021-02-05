@@ -187,6 +187,21 @@ def update_praxis_mentors():
     resp = jsonify(praxis.json_dict())
     return resp
 
+@app.route('/praxis/update-status', methods=['PUT'])
+@jwt_required
+def update_praxis_status():
+    praxis_json = request.get_json()
+    praxis = Praxis.query.filter_by(id=praxis_json['id']).first()
+
+    praxis.status_message = praxis_json['status_message']
+    praxis.status = 'completed' if praxis_json['accepted'] else 'incorrect'
+    db.session().commit()
+
+    praxis = Praxis.query.filter_by(id=praxis_json['id']).first()
+
+    resp = jsonify(praxis.json_dict())
+    return resp
+
 @app.route('/praxis/delete', methods=['DELETE'])
 @jwt_required
 def delete_praxis():
