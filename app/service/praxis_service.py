@@ -176,8 +176,9 @@ def update_praxis_mentors():
     should_send_mail = praxis_json['should_send_email']
     if should_send_mail:
         try:
-            msg = Message('Hello', sender=app.config['MAIL_USERNAME'], recipients=[prof_email])
-            msg.body = "You have been chosen. Heed the call!"
+            msg = Message('UBB PraxisReport info', sender=app.config['MAIL_USERNAME'], recipients=[prof_email])
+            msg.body = "Hello!\n You have been requested to fill out your info for a praxis. \n Please login and fill out the data:\n"
+            msg.body += 'https://ubb-documente-practica.herokuapp.com'
             mailapp.send(msg)
         except:
             pass
