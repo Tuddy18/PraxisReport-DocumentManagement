@@ -25,7 +25,7 @@ def get_all():
     '''
     praxises = Praxis.query.all()
 
-    resp = jsonify([praxis.json_dict() for praxis in praxises])
+    resp = jsonify([praxis.json_dict() for praxis in praxises[::-1]])
     return resp
 
 @app.route('/praxis/get-by-student-email', methods=['POST'])
