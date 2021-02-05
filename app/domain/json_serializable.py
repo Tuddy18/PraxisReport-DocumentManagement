@@ -12,7 +12,7 @@ class JsonSerializable:
 
     def update_from_dict(self, json_dict):
         for key in json_dict.keys():
-            if json_dict[key] and self.__getattribute__(key):
+            if json_dict[key] and key in self.__dict__.keys():
                 if isinstance(self.__dict__[key], JsonSerializable):
                     self.__dict__[key].update_from_dict(json_dict[key])
                 else:
