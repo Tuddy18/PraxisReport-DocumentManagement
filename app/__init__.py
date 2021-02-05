@@ -6,6 +6,7 @@ from flask_jwt_extended import JWTManager
 from flask_mail import Mail
 from flask_selfdoc import Autodoc
 
+PROFILE_SERVICE_URL = 'https://praxisreport-profilemanagement.azurewebsites.net/'
 
 app = Flask(__name__)
 auto = Autodoc(app)

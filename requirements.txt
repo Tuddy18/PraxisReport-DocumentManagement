@@ -7,3 +7,4 @@ flask_cors
 flask-jwt-extended
 flask-mail
 flask-selfdoc
+requests

@@ -1,6 +1,7 @@
+import requests
 from flask_mail import Message
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from app import app, mailapp, auto
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_raw_jwt
+from app import app, mailapp, auto, PROFILE_SERVICE_URL, db
 from flask import request, render_template, flash, redirect, url_for, session, jsonify
 from passlib.hash import sha256_crypt
 from sqlalchemy.orm import with_polymorphic
@@ -147,6 +148,8 @@ def create_praxis():
 
     praxis = Praxis()
     sform = StudentForm(email=student_email)
+
+
     pform = ProfessorForm()
     mform = MentorForm()
     rform = ReportForm()
@@ -157,6 +160,21 @@ def create_praxis():
     praxis.report_form = rform
 
     db.session().add(praxis)
+    db.session().commit()
+
+    # update student form based on student profile
+    try:
+        auth_token = request.headers.get('Authorization')
+        profile_url = PROFILE_SERVICE_URL + 'profile/get-by-email'
+        profile_response = requests.post(profile_url, json={'email': student_email},
+                                         headers={'Authorization': auth_token})
+        profile_json = profile_response.json()
+        if profile_json:
+            sform.update_from_dict(profile_json)
+    except:
+        # student profiel couldn't be found
+        pass
+
     db.session().commit()
 
     praxis = db.session().query(Praxis).filter_by(id=praxis.id).first()
@@ -207,6 +225,29 @@ def update_praxis_mentors():
         except:
             pass
 
+    # update student form based on student profile
+    try:
+        pform = praxis.professor_form
+        mform = praxis.mentor_form
+
+        auth_token = request.headers.get('Authorization')
+        profile_url = PROFILE_SERVICE_URL + 'profile/get-by-email'
+        prof_response = requests.post(profile_url, json={'email': pform.email},
+                                         headers={'Authorization': auth_token})
+        prof_json = prof_response.json()
+        if prof_json:
+            pform.update_from_dict(prof_json)
+
+        mentor_reponse = requests.post(profile_url, json={'email': mform.email},
+                                      headers={'Authorization': auth_token})
+        mentor_json = mentor_reponse.json()
+        if mentor_json:
+            mform.update_from_dict(mentor_json)
+    except:
+        # student profiel couldn't be found
+        pass
+
+    db.session().commit()
     praxis = Praxis.query.filter_by(id=praxis_json['id']).first()
 
     resp = jsonify(praxis.json_dict())
@@ -235,7 +276,7 @@ def update_praxis_status():
 @auto.doc(args=['user identity (JWT_token)', 'id'])
 @jwt_required
 def delete_praxis():
-    id = request.get_json['id']
+    id = request.get_json()['id']
 
     praxis = Praxis.query.filter_by(id=id).first()
 
