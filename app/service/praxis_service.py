@@ -54,8 +54,8 @@ def get_by_email_with_token():
     email = get_jwt_identity()
 
     spraxises = db.session().query(Praxis).join(StudentForm).filter(StudentForm.email == email).all()
-    mpraxis = db.session().query(Praxis).join(MentorForm).filter(MentorForm.email == email).first()
-    ppraxis = db.session().query(Praxis).join(ProfessorForm).filter(ProfessorForm.email == email).first()
+    mpraxis = db.session().query(Praxis).join(MentorForm).filter(MentorForm.email == email).all()
+    ppraxis = db.session().query(Praxis).join(ProfessorForm).filter(ProfessorForm.email == email).all()
 
     # dont do this
 
