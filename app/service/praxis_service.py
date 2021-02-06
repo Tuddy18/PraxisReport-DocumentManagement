@@ -90,7 +90,7 @@ def get_form_by_email():
         form = praxis.student_form
     elif praxis.mentor_form.email == email:
         form = praxis.mentor_form
-    elif praxis.professor_form == email:
+    elif praxis.professor_form.email == email:
         form = praxis.professor_form
     else:
         resp = jsonify(success=False, message='praxis not found')
