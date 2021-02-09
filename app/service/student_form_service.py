@@ -6,7 +6,7 @@ from sqlalchemy.orm import with_polymorphic
 from app.domain.student_form import *
 
 
-@app.route('/student-form/get-all', methods=['GET'])
+#@app.route('/student-form/get-all', methods=['GET'])
 def get_all_sf():
     forms = StudentForm.query.all()
 
@@ -19,7 +19,7 @@ def get_all_sf():
         return resp
 
 
-@app.route('/student-form/get-by-student-email', methods=['POST'])
+#@app.route('/student-form/get-by-student-email', methods=['POST'])
 def get_sf_by_email():
     email = request.get_json()['email']
 
@@ -33,7 +33,7 @@ def get_sf_by_email():
         resp.status_code = 404
         return resp
 
-@app.route('/student-form/create', methods=['POST'])
+#@app.route('/student-form/create', methods=['POST'])
 def create():
     sf_json = request.get_json()
 
